@@ -1,0 +1,30 @@
+(
+    WP_037127040.1_cytochrome_c_family_protein_[Rhizobium_sp._CF097]*Cordoba*Argentina:0.249349
+    ,
+    (
+        (
+            NP_061820.1_cytochrome_c_[Homo_sapiens]*New_York*Estados_Unidos:0.119048
+            ,
+            NP_001285984.1_cytochrome_c_proximal,_isoform_B_[Drosophila_melanogaster]*Santander*España:0.119048
+        ):0.0842176
+        ,
+        (
+            CBJ31344.1_Cytochrome_c_[Ectocarpus_siliculosus]*Buenos_Aires*Argentina:0.155048
+            ,
+            (
+                KAE8767936.1_Cytochrome_c_[Hordeum_vulgare]*Salta*Argentina:0.0792411
+                ,
+                (
+                    QEE59979.1_cytochrome_c_[Betula_platyphylla]*Lima*Peru:0.0288796
+                    ,
+                    (
+                        KAE9612850.1_Cytochrome_c_[Lupinus_albus]*Colonia*Uruguay:0.0223214
+                        ,
+                        NP_001363126.1_cytochrome_c_[Vigna_radiata]*Estocolmo*Suecia:0.0223214
+                    ):0.00655815
+                ):0.0503615
+            ):0.075807
+        ):0.0482171
+    ):0.0460841
+)
+;
