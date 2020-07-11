@@ -1,10 +1,10 @@
-Nucleotide_base = {
+nucleotide_base = {
     'DNA': ['A', 'C', 'G', 'T'],
     'RNA': ['A', 'C', 'G', 'U'],
     'AMINO': ['A', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'K', 'L', 'M', 'N', 'P', 'Q', 'R', 'S', 'T', 'V', 'W', 'Y']
 }
 
-DNA_Codons = {
+dna_codons = {
     # 'M' - START, '_' - STOP
     "GCT": "A", "GCC": "A", "GCA": "A", "GCG": "A",
     "TGT": "C", "TGC": "C",
@@ -29,7 +29,7 @@ DNA_Codons = {
     "TAA": "_", "TAG": "_", "TGA": "_"
 }
 
-RNA_Codons = {
+rna_codons = {
     # 'M' - START, '_' - STOP
     "GCU": "A", "GCC": "A", "GCA": "A", "GCG": "A",
     "UGU": "C", "UGC": "C",
@@ -57,11 +57,11 @@ RNA_Codons = {
 
 def gen_type(seq):
     seq_type = ''
-    if set(Nucleotide_base['DNA']).issuperset(seq):
+    if set(nucleotide_base['DNA']).issuperset(seq):
         seq_type = 'DNA'
-    elif set(Nucleotide_base['RNA']).issuperset(seq):
+    elif set(nucleotide_base['RNA']).issuperset(seq):
         seq_type = 'RNA'
     else:
-        if set(Nucleotide_base['AMINO']).issuperset(seq):
+        if set(nucleotide_base['AMINO']).issuperset(seq):
             seq_type = 'AMINO'
     return seq_type
