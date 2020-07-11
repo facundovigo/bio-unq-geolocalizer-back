@@ -2,8 +2,8 @@ from utilities import *
 from Bio_seq import *
 from Bio_structs import *
 
-class GeoTreeConvert:
 
+class GeoTreeConvert:
     def __init__(self):
         self.seqs = []
         self.error_seq = []
@@ -19,20 +19,16 @@ class GeoTreeConvert:
                 self.seqs.append(Bio_seq(fasta_dic[key], key, gen_type(fasta_dic[key])))
             except:
                 self.error_seq.append(key)
-        return {'seq': self.seqs, 'error_seq': self.error_seq}
+        return {"seq": self.seqs, "error_seq": self.error_seq}
 
     def get_highest_seq(self):
-        count = {
-            'ADN': 0,
-            'ARN': 0,
-            'AMINO': 0
-        }
+        count = {"ADN": 0, "ARN": 0, "AMINO": 0}
         for seq in self.seqs:
-            if seq.seq_type == 'DNA':
-                count['ADN'] += 1
-            if seq.seq_type == 'RNA':
-                count['ARN'] += 1
-            if seq.seq_type == 'AMINO':
-                count['AMINO'] += 1
+            if seq.seq_type == "DNA":
+                count["ADN"] += 1
+            if seq.seq_type == "RNA":
+                count["ARN"] += 1
+            if seq.seq_type == "AMINO":
+                count["AMINO"] += 1
 
         return max(count, key=count.get)
