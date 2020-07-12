@@ -2,6 +2,7 @@ from Bio_seq import Bio_seq
 from utilities import *
 from Bio_structs import *
 from GeoTreeConvert import *
+
 """
 
 geo = GeoTreeConvert()
@@ -11,7 +12,7 @@ seq_type = geo.get_highest_seq()
 
 print(seq_type)
 """
-fasta_dic = convert_fasta_in_dic('../fasta_nombre[Especie]*Ciudad*Pais')
+fasta_dic = convert_fasta_in_dic("../fasta_nombre[Especie]*Ciudad*Pais")
 array_seq = []
 error_seq = []
 for key in fasta_dic.keys():
@@ -20,32 +21,28 @@ for key in fasta_dic.keys():
     except:
         error_seq.append(key)
 
-    count = {
-        'ADN': 0,
-        'ARN': 0,
-        'AMINO': 0
-    }
+    count = {"ADN": 0, "ARN": 0, "AMINO": 0}
 for seq in array_seq:
-    if seq.seq_type == 'DNA':
-        count['ADN'] += 1
-    if seq.seq_type == 'RNA':
-        count['ARN'] += 1
-    if seq.seq_type == 'AMINO':
-        count['AMINO'] += 1
+    if seq.seq_type == "DNA":
+        count["ADN"] += 1
+    if seq.seq_type == "RNA":
+        count["ARN"] += 1
+    if seq.seq_type == "AMINO":
+        count["AMINO"] += 1
 
 max_type_encontrados = max(count, key=count.get)
 
 ##array_para_alinear = array_seq.filter(seq.type == max_type_encontrados)
 
 
-print('err', error_seq)
+print("err", error_seq)
 for seq in array_seq:
     print(seq.show_info())
 
-#print(error_seq, "err")
+# print(error_seq, "err")
 
 
-#dic_to_array_bio_seq(fasta_dic)
+# dic_to_array_bio_seq(fasta_dic)
 
 
 # DONE validar si son acidos nucleicos o no
@@ -53,4 +50,3 @@ for seq in array_seq:
 # DONE que no queden seq sin headers
 # DONE ni headers sin seq
 # cantidad de seq tiene ser considerable
-
