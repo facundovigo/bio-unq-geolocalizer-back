@@ -4,6 +4,7 @@ from Bio_structs import *
 from GeoTreeConvert import *
 
 """
+>>>>>>> cec879ffd8aedd64f2fbfa05af67654da1d545be
 
 geo = GeoTreeConvert()
 
@@ -11,6 +12,8 @@ dic = geo.validate_input_data('seqs_validaciones.fasta')
 seq_type = geo.get_highest_seq()
 
 print(seq_type)
+
+fasta_dic = convert_fasta_in_dic('seqs_validaciones.fasta')
 """
 fasta_dic = convert_fasta_in_dic("../fasta_nombre[Especie]*Ciudad*Pais")
 array_seq = []

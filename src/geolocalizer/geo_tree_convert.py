@@ -1,6 +1,6 @@
 from utilities import *
-from Bio_seq import *
-from Bio_structs import *
+from bio_seq import *
+from bio_structs import *
 
 
 class GeoTreeConvert:
