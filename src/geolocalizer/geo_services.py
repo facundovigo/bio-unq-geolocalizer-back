@@ -18,22 +18,20 @@ class GeoServices:
         """
         init = 1
         documento = xlrd.open_workbook(input_file).sheet_by_index(nro_shet)
-        dictionary = dict()
+        countries = []
         if not headers:
             init = 0
         for i in range(init, documento.nrows):
-                if documento.row(i)[nro_country_col].value not in dictionary.values():
-                    dictionary[documento.row(i)[nro_id_col].value] = documento.row(i)[nro_country_col].value
-        return list(dictionary.values())
+            if documento.row(i)[nro_country_col].value not in countries:
+                countries.append(documento.row(i)[nro_country_col].value)
+        return countries
 
-    def get_coords_from(self,name):
+    def get_coords_from(self, name):
+        """
+        return a dictionary with name, lattitud and longitude.
+        params, name of city or country
+        """
         geolocator = Nominatim(user_agent="spanish")
         geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
         location = geocode(name)
         return {'name': name, 'lat': location.latitude, 'long': location.longitude}
-
-geo = GeoServices()
-countries = geo.get_countries_from_xls('files/tabla_accession_numbers_loc.xls')
-for c in countries:
-    blah = geo.get_coords_from(c)
-    print(blah)
