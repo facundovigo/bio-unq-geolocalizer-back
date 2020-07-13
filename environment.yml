@@ -1,10 +1,13 @@
 name: geolocalizer
 channels:
   - bioconda
+  - conda-forge
   - defaults
 dependencies:
   - biopython=1.77
+  - black=19.10b0
   - clustalo=1.2.3
+  - folium=0.11.0
+  - iqtree=2.0.3
   - pytest=5.4.3
   - python=3.8.3
-  - black

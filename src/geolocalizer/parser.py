@@ -1,5 +1,5 @@
 from pathlib import Path
-from src.geolocalizer.bio_structs import gen_type
+from bio_structs import gen_type
 import re
 from datetime import datetime
 import ntpath
@@ -56,8 +56,8 @@ class Parser:
 
         lat_and_long = re.search(geoloc_extract_regexp, header)
         if lat_and_long:
-            geo_seq["latitude"] = lat_and_long.group(1)
-            geo_seq["longitude"] = lat_and_long.group(2)
+            geo_seq["latitude"] = float(lat_and_long.group(1))
+            geo_seq["longitude"] = float(lat_and_long.group(2))
 
         genbank = re.search(genbank_regexp, header)
         if genbank:
