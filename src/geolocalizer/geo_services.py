@@ -24,15 +24,19 @@ class GeoServices:
         if not headers:
             init = 0
         for i in range(init, documento.nrows):
-            dictionary[(documento.cell_value(i, nro_id_col)[3:-1])] = (documento.cell_value(i, nro_country_col)) 
+            dictionary[
+                (documento.cell_value(i, nro_id_col)[3:-1])
+            ] = documento.cell_value(i, nro_country_col)
         return dictionary
-    
+
     def get_location_for_idseq(self, listseq, dicc):
         result = []
         for seqq in listseq:
-            if dicc[seqq['genbank_accession']]:
-                result.append({**seqq, **(self.get_coords_from(dicc[seqq['genbank_accession']]))})
-        return result      
+            if dicc[seqq["genbank_accession"]]:
+                result.append(
+                    {**seqq, **(self.get_coords_from(dicc[seqq["genbank_accession"]]))}
+                )
+        return result
 
     def get_coords_from(self, name):
         """
