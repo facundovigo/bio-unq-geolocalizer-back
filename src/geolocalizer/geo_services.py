@@ -25,6 +25,7 @@ class GeoServices:
         """
         init = 1
         documento = xlrd.open_workbook(input_file).sheet_by_index(nro_shet)
+        countries = []
         dictionary = dict()
         if not headers:
             init = 0

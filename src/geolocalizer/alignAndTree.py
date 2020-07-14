@@ -5,6 +5,7 @@ import os
 
 class AlignAndTree:
     os.chdir('files/')
+    
     def generate_ouput_name(self, input_path, final_text="align"):
         now = datetime.now()
         timestamp = datetime.timestamp(now)
@@ -27,9 +28,4 @@ class AlignAndTree:
             command_stdout = Popen(["iqtree", "-s", input_path, '-bb', bootstrap], stdout=PIPE).communicate()[0]
         return output[:18]
 
-
-tree = AlignAndTree()
-temp = tree.align_fasta("pruebaFasta_iqtree")
-print(temp)
-print(tree.tree_from_align(temp))
 
