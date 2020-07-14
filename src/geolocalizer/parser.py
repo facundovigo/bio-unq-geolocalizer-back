@@ -1,5 +1,5 @@
 from pathlib import Path
-from bio_structs import gen_type
+from src.geolocalizer.bio_structs import gen_type
 import re
 from datetime import datetime
 import ntpath
@@ -18,7 +18,7 @@ class TooFewSequencesError(Exception):
 class Parser:
     def parse(self, sequence_path, write_output=False):
         full_path = str(Path(sequence_path).absolute())
-        if not full_path.endswith(".fasta"):
+        if not (full_path.endswith(".fasta") or full_path.endswith(".fst")):
             raise InvalidFileError("The file is not a fasta")
 
         raw_fasta_dic = self.__read_fasta(full_path)
@@ -45,23 +45,13 @@ class Parser:
         return {"seqs": biggest_group, "output_path": output_path}
 
     def __build_geo_seq(self, header, raw_seq):
-        geoloc_extract_regexp = r"(?=\\GEOLOCALIZATION=\((.*?)\)\((.*?)\))"
-        geoloc_remove_regexp = r"(\\GEOLOCALIZATION=\(.*?\)\(.*?\))"
-        genbank_regexp = r"(?:^)(\w+.\d)"
+        geo_seq = {"description": header, "seq": raw_seq}
 
-        parsed_description = re.sub(geoloc_remove_regexp, "", header)
-        parsed_description = re.sub(genbank_regexp, "", parsed_description).strip()
-
-        geo_seq = {"description": parsed_description, "seq": raw_seq}
-
-        lat_and_long = re.search(geoloc_extract_regexp, header)
-        if lat_and_long:
-            geo_seq["latitude"] = float(lat_and_long.group(1))
-            geo_seq["longitude"] = float(lat_and_long.group(2))
-
+        genbank_regexp = r"(?=gi\|(.*?)\|gb\|(.*?)\|)"
         genbank = re.search(genbank_regexp, header)
         if genbank:
-            geo_seq["genbank_id"] = genbank.group(0)
+            geo_seq["genbank_accession"] = genbank.group(1)
+            geo_seq["genbank_gen_info"] = genbank.group(2)
 
         return geo_seq
 
