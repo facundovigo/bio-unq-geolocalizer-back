@@ -32,7 +32,7 @@ class GeoServices:
     def get_location_for_idseq(self, listseq, dicc):
         result = []
         for seqq in listseq:
-            if dicc[seqq["genbank_accession"]]:
+            if "genbank_accession" in seqq and seqq["genbank_accession"] in dicc:
                 result.append(
                     {**seqq, **(self.get_coords_from(dicc[seqq["genbank_accession"]]))}
                 )
@@ -46,4 +46,8 @@ class GeoServices:
         geolocator = Nominatim(user_agent="spanish")
         geocode = RateLimiter(geolocator.geocode, min_delay_seconds=1)
         location = geocode(name)
-        return {"name": name, "lat": location.latitude, "long": location.longitude}
+        return {
+            "name": name,
+            "latitude": location.latitude,
+            "longitude": location.longitude,
+        }

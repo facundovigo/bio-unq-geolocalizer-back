@@ -1,12 +1,11 @@
 from pathlib import Path
 from Bio import Phylo
 import folium
-from parser import Parser
 
 
 class Canvas:
     def __init__(self, parsed_seqs, treefile_path):
-        self.parsed_seqs = self.__arrange_seqs(parsed_seqs["seqs"])
+        self.parsed_seqs = self.__arrange_seqs(parsed_seqs)
         self.treefile_path = str(Path(treefile_path).absolute())
 
     def create_map(self):
@@ -25,26 +24,36 @@ class Canvas:
         return fmap
 
     def create_map_and_save_to(self, to):
-        map = canvas.create_map()
+        map = self.create_map()
         map.save(to)
         return to
 
     def __visit_tree_and_add(self, terminal_parent, clade, fmap):
-        if clade.name:
+        if clade.name and clade.name in self.parsed_seqs:
             seq = self.parsed_seqs[clade.name]
 
-            folium.Marker(
-                [seq["latitude"], seq["longitude"]],
-                popup=seq["genbank_id"],
-                tooltip=seq["genbank_id"],
-            ).add_to(fmap)
+            if "latitude" in seq and "longitude" in seq:
+                folium.Marker(
+                    [seq["latitude"], seq["longitude"]],
+                    popup=seq["description"],
+                    tooltip=seq["genbank_accession"],
+                ).add_to(fmap)
+            else:
+                print(f"NOT FOUND {clade.name}")
 
         if clade.is_terminal():
-            start_seq = self.parsed_seqs[terminal_parent]
-            end_seq = self.parsed_seqs[clade.name]
+            if terminal_parent in self.parsed_seqs and clade.name in self.parsed_seqs:
+                start_seq = self.parsed_seqs[terminal_parent]
+                end_seq = self.parsed_seqs[clade.name]
 
-            self.__add_line(start_seq, end_seq, fmap)
-            self.__add_arrow_head(start_seq, end_seq, fmap)
+                valid_start = "latitude" in start_seq and "longitude" in start_seq
+                valid_end = "latitude" in end_seq and "longitude" in end_seq
+
+                if valid_start and valid_end:
+                    self.__add_line(start_seq, end_seq, fmap)
+                    self.__add_arrow_head(start_seq, end_seq, fmap)
+                else:
+                    print(f"NOT FOUND {terminal_parent} - {clade.name}")
         else:
             left_tree = clade.clades[0]
             right_tree = clade.clades[1]
@@ -82,7 +91,7 @@ class Canvas:
     def __arrange_seqs(self, seqs):
         return_dict = {}
         for seq in seqs:
-            return_dict[seq["genbank_id"]] = seq
+            return_dict[seq["iqtree_label"]] = seq
 
         return return_dict
 
