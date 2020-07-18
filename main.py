@@ -5,9 +5,14 @@ from src.geolocalizer.canvas import Canvas
 import sys, getopt
 
 
-
 if __name__ == "__main__":
+    email = ""
+    if not email:
+        raise Exception("Set Entrez email")
 
+    parsed_fasta = Parser().parse(
+        "tests/sequences/geolocalized_seqs.fasta", write_output=True
+    )
     if (sys.argv[1].__str__ == "h") | (len(sys.argv) != 3):
         print('case of use:   test.py file_align table_accessions')
     else:
@@ -19,7 +24,8 @@ if __name__ == "__main__":
             countries = geo_services.get_countries_from_xls(
                 f'src/files/{sys.argv[2]}'
             )
-            geo_seqs = geo_services.get_location_for_idseq(parsed_fasta["seqs"], countries)
+            geo_services = GeoServices(email)
+            geo_seqs = geo_services.get_location_for_idseq(parsed_fasta["seqs"])
             align_and_tree = AlignAndTree()
             output_path = align_and_tree.align_fasta(parsed_fasta["output_path"])
             tree_path = align_and_tree.tree_from_align(output_path)

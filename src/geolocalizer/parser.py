@@ -48,17 +48,17 @@ class Parser:
         geo_seq = {"description": header, "seq": raw_seq}
         geo_seq["iqtree_label"] = re.search(r"([^\s]+)", header).group(0)
 
-        genbank_regexp = r"(?=gi\|(.*?)\|\w{2,3}\|(.*?)\|)"
+        genbank_regexp = r"(?=gi\|(.*?)\|\w{2,3}\|(.*?).\d?\|)"
 
         genbank = re.search(genbank_regexp, header)
         if genbank:
             geo_seq["genbank_gen_info"] = genbank.group(1)
             geo_seq["genbank_accession"] = genbank.group(2)
         else:
-            simple_genbank_regexp = r"(?:^)(\w+.\d)"
+            simple_genbank_regexp = r"(?:^)(\w+).\d"
             simple_genbank = re.search(simple_genbank_regexp, header)
             if simple_genbank:
-                geo_seq["genbank_accession"] = simple_genbank.group(0)
+                geo_seq["genbank_accession"] = simple_genbank.group(1)
 
         return geo_seq
 
