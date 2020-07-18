@@ -1,44 +1,49 @@
-import xlrd
 from geopy import geocoders
 from geopy.extra.rate_limiter import RateLimiter
 from geopy.geocoders import Nominatim
+from Bio import Entrez
 
 
 class GeoServices:
-    def get_countries_from_xls(
-        self, input_file, nro_id_col=1, nro_country_col=3, nro_shet=0, headers=True
-    ):
-        """
-        Return a list of countries
-        Params:
-            input_file: file's path
-            nro_id_col: the id_gbank's position column in the table
-            nro_country_col: the country's position column in the table
-            nro_shet: document's shet number
-            headers: if have headers true, else false
-        """
-        init = 1
-        documento = xlrd.open_workbook(input_file).sheet_by_index(nro_shet)
-        countries = []
-        dictionary = dict()
-        if not headers:
-            init = 0
-        for i in range(init, documento.nrows):
-            dictionary[
-                (documento.cell_value(i, nro_id_col)[3:-1])
-            ] = documento.cell_value(i, nro_country_col)
-        return dictionary
+    def __init__(self, entrez_email):
+        Entrez.email = entrez_email
 
-    def get_location_for_idseq(self, listseq, dicc):
-        result = []
-        for seqq in listseq:
-            if "genbank_accession" in seqq and seqq["genbank_accession"] in dicc:
-                result.append(
-                    {**seqq, **(self.get_coords_from(dicc[seqq["genbank_accession"]]))}
+    def geolocalize_seqs(self, seqs):
+        accessions = list(map(lambda s: s["genbank_accession"], seqs))
+        handle = Entrez.efetch("nucleotide", id=accessions, retmode="xml")
+        response = Entrez.read(handle)
+
+        countries = {}
+
+        for entry in response:
+            accession = entry["GBSeq_primary-accession"]
+
+            features = entry["GBSeq_feature-table"]
+            features = list(filter(lambda f: f["GBFeature_key"] == "source", features))
+
+            for feature in features:
+                qualifiers = feature["GBFeature_quals"]
+                qualifiers = list(
+                    filter(lambda q: q["GBQualifier_name"] == "country", qualifiers)
                 )
+
+                country_values = list(map(lambda q: q["GBQualifier_value"], qualifiers))
+                if country_values:
+                    countries[accession] = " ".join(country_values)
+
+        result = []
+        for seq in seqs:
+            if "genbank_accession" in seq and seq["genbank_accession"] in countries:
+                result.append(
+                    {
+                        **seq,
+                        **(self.__get_coords_from(countries[seq["genbank_accession"]])),
+                    }
+                )
+
         return result
 
-    def get_coords_from(self, name):
+    def __get_coords_from(self, name):
         """
         return a dictionary with name, lattitud and longitude.
         params, name of city or country
