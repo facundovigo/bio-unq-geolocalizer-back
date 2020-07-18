@@ -1,0 +1,10 @@
+{
+    "clustal": {
+        "inputh": "/files/pruebaFasta_iqtree",
+        "salchicha": "salchicha"
+    },
+    "iqtree": {
+        "input_path": "blah",
+        "bootstrap": "1000"
+    }
+}
