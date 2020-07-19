@@ -1,13 +1,13 @@
 from src.geolocalizer.logger import Logger
 from src.geolocalizer.parser import Parser
 from src.geolocalizer.geo_services import GeoServices
-from src.geolocalizer.alignAndTree import AlignAndTree
+from src.geolocalizer.align_and_tree import AlignAndTree
 from src.geolocalizer.canvas import Canvas
 import sys, getopt
 
 
 if __name__ == "__main__":
-    email = ""
+    email = "rizziromanalejandro@gmail.com"
     if not email:
         raise Exception("Set Entrez email")
 
