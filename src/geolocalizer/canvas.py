@@ -11,8 +11,6 @@ class Canvas:
         self.__module = "Canvas"
 
     def create_map(self):
-        self.__logger.log(self.__module, "Creating map...")
-
         fmap = folium.Map(tiles="cartodbpositron", zoom_start=1)
         tree = Phylo.read(self.treefile_path, "newick")
         root = tree.root
@@ -27,7 +25,6 @@ class Canvas:
 
         self.__visit_tree_and_add(root.name, root, fmap)
 
-        self.__logger.log(self.__module, "Map created.")
         return fmap
 
     def create_map_and_save_to(self, to):
@@ -47,7 +44,7 @@ class Canvas:
                     tooltip=seq["genbank_accession"],
                 ).add_to(fmap)
             else:
-                print(f"NOT FOUND {clade.name}")
+                self.__logger.log(self.__module, f'Coordinates missing for {seq["description"]}.')
 
         if clade.is_terminal():
             if terminal_parent in self.parsed_seqs and clade.name in self.parsed_seqs:
@@ -60,8 +57,6 @@ class Canvas:
                 if valid_start and valid_end:
                     self.__add_line(start_seq, end_seq, fmap)
                     self.__add_arrow_head(start_seq, end_seq, fmap)
-                else:
-                    print(f"NOT FOUND {terminal_parent} - {clade.name}")
         else:
             left_tree = clade.clades[0]
             right_tree = clade.clades[1]

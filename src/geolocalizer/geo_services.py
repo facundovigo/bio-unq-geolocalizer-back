@@ -11,8 +11,6 @@ class GeoServices:
         self.__module = "GeoServices"
 
     def geolocalize_seqs(self, seqs):
-        self.__logger.log(self.__module, "Geolocalizing sequences...")
-
         accessions = list(map(lambda s: s["genbank_accession"], seqs))
         handle = Entrez.efetch("nucleotide", id=accessions, retmode="xml")
         response = Entrez.read(handle)
@@ -49,8 +47,6 @@ class GeoServices:
                     self.__module,
                     f'Failed to geolocalize {seq["description"]}. Country information not present',
                 )
-
-        self.__logger.log(self.__module, "Geolocalization finished.")
 
         return result
 

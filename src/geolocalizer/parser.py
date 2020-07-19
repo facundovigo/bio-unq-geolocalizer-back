@@ -27,8 +27,6 @@ class Parser:
             logger.err(self.__module, err_msg)
             raise InvalidFileError(err_msg)
 
-        self.__logger.log(self.__module, "Parsing input file...")
-
         raw_fasta_dic = self.__read_fasta(full_path)
         parsed_geo_seqs = {"DNA": [], "RNA": [], "AMINO": []}
 
@@ -52,8 +50,6 @@ class Parser:
         output_path = ""
         if write_output:
             output_path = self.__write_validated_fasta(sequence_path, biggest_group)
-
-        self.__logger.log(self.__module, "Finished parsing")
 
         return {"seqs": biggest_group, "output_path": output_path}
 

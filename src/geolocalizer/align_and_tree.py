@@ -17,21 +17,15 @@ class AlignAndTree:
         return output
 
     def align_fasta(self, input_path):
-        self.__logger.log(self.__module, "Aligning fasta file...")
-
         ext = self.generate_file_extension()
         output = f"{input_path}{ext}"
         command_stdout = Popen(
             ["clustalo", "-i", input_path, "-o", output], stdout=PIPE
         ).communicate()[0]
 
-        self.__logger.log(self.__module, "Fasta file aligned.")
-
         return output
 
     def tree_from_align(self, input_path, bootstrap="1000", merge=True):
-        self.__logger.log(self.__module, "Generating phylogenetic tree...")
-
         with self.__cd("tmp/"):
             if merge:
                 command_stdout = Popen(
@@ -42,8 +36,6 @@ class AlignAndTree:
                 command_stdout = Popen(
                     ["iqtree", "-s", input_path, "-bb", bootstrap], stdout=PIPE
                 ).communicate()[0]
-
-        self.__logger.log(self.__module, "Finished generating tree.")
 
         return f"{input_path}.treefile"
 
