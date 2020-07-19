@@ -1,3 +1,4 @@
+from src.geolocalizer.logger import Logger
 from src.geolocalizer.parser import Parser
 from src.geolocalizer.geo_services import GeoServices
 from src.geolocalizer.alignAndTree import AlignAndTree
@@ -10,25 +11,20 @@ if __name__ == "__main__":
     if not email:
         raise Exception("Set Entrez email")
 
-    parsed_fasta = Parser().parse(
-        "tests/sequences/geolocalized_seqs.fasta", write_output=True
-    )
-    if (sys.argv[1].__str__ == "h") | (len(sys.argv) != 3):
-        print('case of use:   test.py file_align table_accessions')
+    logger = Logger("tmp/logfile.txt")
+    if (sys.argv[1].__str__ == "h") | (len(sys.argv) != 2):
+        print("case of use:   test.py file_align")
     else:
         try:
-            parsed_fasta = Parser().parse(
-                f'src/files/{sys.argv[1]}', write_output=True
+            parsed_fasta = Parser(logger).parse(
+                f"src/files/{sys.argv[1]}", write_output=True
             )
-            geo_services = GeoServices()
-            countries = geo_services.get_countries_from_xls(
-                f'src/files/{sys.argv[2]}'
-            )
-            geo_services = GeoServices(email)
-            geo_seqs = geo_services.get_location_for_idseq(parsed_fasta["seqs"])
-            align_and_tree = AlignAndTree()
+            geo_seqs = GeoServices(email, logger).geolocalize_seqs(parsed_fasta["seqs"])
+            align_and_tree = AlignAndTree(logger)
             output_path = align_and_tree.align_fasta(parsed_fasta["output_path"])
             tree_path = align_and_tree.tree_from_align(output_path)
-            Canvas(geo_seqs, tree_path).create_map_and_save_to("tmp/mapa_prueba.html")
+            Canvas(geo_seqs, tree_path, logger).create_map_and_save_to(
+                "tmp/mapa_prueba.html"
+            )
         except getopt.GetoptError:
-            print('test.py file_align table_accessions')
+            print("test.py file_align table_accessions")

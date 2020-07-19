@@ -4,14 +4,20 @@ import folium
 
 
 class Canvas:
-    def __init__(self, parsed_seqs, treefile_path):
+    def __init__(self, parsed_seqs, treefile_path, logger):
         self.parsed_seqs = self.__arrange_seqs(parsed_seqs)
         self.treefile_path = str(Path(treefile_path).absolute())
+        self.__logger = logger
+        self.__module = "Canvas"
 
     def create_map(self):
+        self.__logger.log(self.__module, "Creating map...")
+
         fmap = folium.Map(tiles="cartodbpositron", zoom_start=1)
         tree = Phylo.read(self.treefile_path, "newick")
         root = tree.root
+
+        self.__logger.log(self.__module, Phylo.draw_ascii(tree))
 
         if not tree.rooted:
             new_root = root.get_terminals()[0]
@@ -21,11 +27,13 @@ class Canvas:
 
         self.__visit_tree_and_add(root.name, root, fmap)
 
+        self.__logger.log(self.__module, "Map created.")
         return fmap
 
     def create_map_and_save_to(self, to):
         map = self.create_map()
         map.save(to)
+        self.__logger.log(self.__module, f"Map saved to {to}")
         return to
 
     def __visit_tree_and_add(self, terminal_parent, clade, fmap):
@@ -94,7 +102,3 @@ class Canvas:
             return_dict[seq["iqtree_label"]] = seq
 
         return return_dict
-
-
-# canvas = Canvas(Parser().parse('tests/map/raw.fasta'), 'tests/map/aligned.fasta.treefile')
-# map = canvas.create_map_and_save_to('tmp/mapita.html')

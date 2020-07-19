@@ -16,10 +16,18 @@ class TooFewSequencesError(Exception):
 
 
 class Parser:
+    def __init__(self, logger):
+        self.__logger = logger
+        self.__module = "Parser"
+
     def parse(self, sequence_path, write_output=False):
         full_path = str(Path(sequence_path).absolute())
         if not (full_path.endswith(".fasta") or full_path.endswith(".fst")):
-            raise InvalidFileError("The file is not a fasta")
+            err_msg = "The file is not a fasta"
+            logger.err(self.__module, err_msg)
+            raise InvalidFileError(err_msg)
+
+        self.__logger.log(self.__module, "Parsing input file...")
 
         raw_fasta_dic = self.__read_fasta(full_path)
         parsed_geo_seqs = {"DNA": [], "RNA": [], "AMINO": []}
@@ -32,15 +40,20 @@ class Parser:
         biggest_group_size = len(biggest_group)
 
         if biggest_group_size < 5:
-            raise TooFewSequencesError(
-                "You need to include more that 5 sequences of the same type."
-            )
+            err_msg = "You need to include more that 5 sequences of the same type."
+            self.__logger.err(self.__module, err_msg)
+            raise TooFewSequencesError(err_msg)
         if biggest_group_size < 60:
-            True  # warning
+            self.__logger.warn(
+                self.__module,
+                "Consider providing at least 60 different sequences for optimal results.",
+            )
 
         output_path = ""
         if write_output:
             output_path = self.__write_validated_fasta(sequence_path, biggest_group)
+
+        self.__logger.log(self.__module, "Finished parsing")
 
         return {"seqs": biggest_group, "output_path": output_path}
 
