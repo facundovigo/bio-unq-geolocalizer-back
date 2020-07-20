@@ -1,10 +1,11 @@
 {
     "clustal": {
-        "inputh": "/files/pruebaFasta_iqtree",
-        "salchicha": "salchicha"
+        "threads": "--threads=4"
     },
     "iqtree": {
-        "input_path": "blah",
-        "bootstrap": "1000"
-    }
+        "bootstrap": "1000",
+        "model_finder": "NONE"
+    },
+    "email": ""
+
 }

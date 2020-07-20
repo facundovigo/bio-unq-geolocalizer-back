@@ -4,14 +4,18 @@ import folium
 
 
 class Canvas:
-    def __init__(self, parsed_seqs, treefile_path):
+    def __init__(self, parsed_seqs, treefile_path, logger):
         self.parsed_seqs = self.__arrange_seqs(parsed_seqs)
         self.treefile_path = str(Path(treefile_path).absolute())
+        self.__logger = logger
+        self.__module = "Canvas"
 
     def create_map(self):
         fmap = folium.Map(tiles="cartodbpositron", zoom_start=1)
         tree = Phylo.read(self.treefile_path, "newick")
         root = tree.root
+
+        self.__logger.log(self.__module, Phylo.draw_ascii(tree))
 
         if not tree.rooted:
             new_root = root.get_terminals()[0]
@@ -26,6 +30,7 @@ class Canvas:
     def create_map_and_save_to(self, to):
         map = self.create_map()
         map.save(to)
+        self.__logger.log(self.__module, f"Map saved to {to}")
         return to
 
     def __visit_tree_and_add(self, terminal_parent, clade, fmap):
@@ -39,7 +44,7 @@ class Canvas:
                     tooltip=seq["genbank_accession"],
                 ).add_to(fmap)
             else:
-                print(f"NOT FOUND {clade.name}")
+                self.__logger.log(self.__module, f'Coordinates missing for {seq["description"]}.')
 
         if clade.is_terminal():
             if terminal_parent in self.parsed_seqs and clade.name in self.parsed_seqs:
@@ -52,8 +57,6 @@ class Canvas:
                 if valid_start and valid_end:
                     self.__add_line(start_seq, end_seq, fmap)
                     self.__add_arrow_head(start_seq, end_seq, fmap)
-                else:
-                    print(f"NOT FOUND {terminal_parent} - {clade.name}")
         else:
             left_tree = clade.clades[0]
             right_tree = clade.clades[1]
@@ -94,7 +97,3 @@ class Canvas:
             return_dict[seq["iqtree_label"]] = seq
 
         return return_dict
-
-
-# canvas = Canvas(Parser().parse('tests/map/raw.fasta'), 'tests/map/aligned.fasta.treefile')
-# map = canvas.create_map_and_save_to('tmp/mapita.html')

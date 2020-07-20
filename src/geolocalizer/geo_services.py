@@ -5,8 +5,10 @@ from Bio import Entrez
 
 
 class GeoServices:
-    def __init__(self, entrez_email):
+    def __init__(self, entrez_email, logger):
         Entrez.email = entrez_email
+        self.__logger = logger
+        self.__module = "GeoServices"
 
     def geolocalize_seqs(self, seqs):
         accessions = list(map(lambda s: s["genbank_accession"], seqs))
@@ -39,6 +41,11 @@ class GeoServices:
                         **seq,
                         **(self.__get_coords_from(countries[seq["genbank_accession"]])),
                     }
+                )
+            else:
+                self.__logger.warn(
+                    self.__module,
+                    f'Failed to geolocalize {seq["description"]}. Country information not present',
                 )
 
         return result

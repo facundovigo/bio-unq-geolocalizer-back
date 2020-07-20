@@ -1,25 +1,51 @@
+from src.geolocalizer.logger import Logger
 from src.geolocalizer.parser import Parser
 from src.geolocalizer.geo_services import GeoServices
-from src.geolocalizer.alignAndTree import AlignAndTree
+from src.geolocalizer.align_and_tree import AlignAndTree
 from src.geolocalizer.canvas import Canvas
-import sys, getopt
+import sys, getopt, json
+
 
 
 if __name__ == "__main__":
+
+    with open("file_configuration.json") as contenido:
+        resultado = json.load(contenido)
+    email = resultado.get('email')
     
-    email = f'rizziromanalejandro@gmail.com'
-    if (sys.argv[1].__str__ == "h") or (len(sys.argv) != 3):
-        print('case of use:   test.py file_align table_accessions')
+    if not email:
+        raise Exception("Set Entrez email")
+
+    logger = Logger("tmp/logfile.txt")
+    if (sys.argv[1].__str__ == "h") | (len(sys.argv) != 2):
+        print("case of use:   test.py file_align")
     else:
         try:
-            parsed_fasta = Parser().parse(
-                "tests/sequences/geolocalized_seqs.fasta", write_output=True
+            logger.log("Parser", "Parsing input file...")
+            parsed_fasta = Parser(logger).parse(
+                f"src/files/{sys.argv[1]}", write_output=True
             )
-           
-            geo_services = GeoServices(email)
-            geo_seqs = geo_services.geolocalize_seqs(parsed_fasta["seqs"])
-            align_and_tree = AlignAndTree()
-            output_path = align_and_tree.align_fasta(parsed_fasta["output_path"])
-            tree_path = align_and_tree.tree_from_align(output_path)
+            logger.log("Parser", "Done")
+
+            logger.log('GeoServices', "Geolocalizing sequences...")
+            geo_seqs = GeoServices(email, logger).geolocalize_seqs(parsed_fasta["seqs"])
+            logger.log('GeoServices', "Done")
+
+
+            align_and_tree = AlignAndTree(logger)
+            logger.log('AlignAndTree', "Aligning fasta file...")
+            output_path = align_and_tree.align_fasta(parsed_fasta["output_path"],resultado.get('clustal').get('threads'))
+            logger.log('AlignAndTree', "Done")
+
+            logger.log('AlignAndTree', "Generating phylogenetic tree...")
+            tree_path = align_and_tree.tree_from_align(output_path, resultado.get('iqtree').get('bootstrap'), resultado.get('iqtree').get('model_finder'))
+
+            logger.log('AlignAndTree', "Done")
+
+            logger.log("Canvas", "Creating map...")
+            Canvas(geo_seqs, tree_path, logger).create_map_and_save_to(
+                "tmp/mapa_prueba.html"
+            )
+            logger.log("Canvas", "Done")
         except getopt.GetoptError:
-            print('test.py file_align table_accessions')
+            print("test.py file_align table_accessions")
