@@ -42,6 +42,24 @@ To call the program:
 
 `python main.py geolocalized_seqs.fasta`
 
+### Config your environment
+
+In the main folder there is a file_configuration.json where you can modify the parameters set by default.  
+IMPORTANT: there must be an email from a valid account at https://www.ncbi.nlm.nih.gov/gene/
+We can also parameterize clustal and iqtree.
+In Clustal the number of threads must be greater than 1.
+In IQtree the Bootstrap value must be greater than or equal to 1000, and the finder model can be one of the following: 
++ -m TESTONLY          (Standard model selection / like jModelTest, ProtTest)
++ -m TEST              (Standard model selection followed by tree inference)
++ -m MF                (Extended model selection with FreeRate heterogeneity)
++ -m MFP               (Extended model selection followed by tree inference)
++ -m TESTMERGEONLY     (Find best partition scheme / like PartitionFinder)
++ -m TESTMERGE         (Find best partition scheme followed by tree inference)
++ -m MF+MERGE          (Find best partition scheme incl. FreeRate heterogeneity)
++ -m MFP+MERGE         (Like -m MF+MERGE followed by tree inference)  
+
+IMPORTANT: If a Model Finder is setup, the value of bootstrap is not considered since they are mutually exclusive.  
+
 ### Debugging
 
 You'll find every file created by the program inside the `tmp` folder. There's also a log file you can use to understand more about the execution.
