@@ -44,7 +44,9 @@ class Canvas:
                     tooltip=seq["genbank_accession"],
                 ).add_to(fmap)
             else:
-                self.__logger.log(self.__module, f'Coordinates missing for {seq["description"]}.')
+                self.__logger.log(
+                    self.__module, f'Coordinates missing for {seq["description"]}.'
+                )
 
         if clade.is_terminal():
             if terminal_parent in self.parsed_seqs and clade.name in self.parsed_seqs:
