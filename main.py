@@ -22,8 +22,8 @@ if __name__ == "__main__":
 
     email = parsed_config.get("email")
     if not email:
-        raise Exception("Set Entrez email")
-
+        print("Set Entrez email in the config.json")
+        exit(2)
     logger = Logger("tmp/logfile.txt")
 
     logger.log("Parser", "Parsing input file...")

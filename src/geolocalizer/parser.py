@@ -48,7 +48,6 @@ class Parser:
         if biggest_group_size < 5:
             err_msg = "You need to include more that 5 sequences of the same type."
             self.__logger.err(self.__module, err_msg)
-            #raise TooFewSequencesError(err_msg)
             exit(2)
         if biggest_group_size < 60:
             self.__logger.warn(
