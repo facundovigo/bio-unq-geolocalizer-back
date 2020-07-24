@@ -20,22 +20,22 @@ class AlignAndTree:
         ext = self.generate_file_extension()
         output = f"{input_path}{ext}"
         command_stdout = Popen(
-            ["clustalo", f'{threads}',"-i", input_path, "-o", output], stdout=PIPE
+            ["clustalo", f"{threads}", "-i", input_path, "-o", output], stdout=PIPE
         ).communicate()[0]
 
         return output
 
     def tree_from_align(self, input_path, bootstrap, finder):
         with self.__cd("tmp/"):
-            
-            if finder[0:2]=='-m':
+
+            if finder[0:2] == "-m":
                 command_stdout = Popen(
-                    ["iqtree", "-s", input_path, f'{finder[0:2]}', f'{finder[3:]}'],
+                    ["iqtree", "-s", input_path, f"{finder[0:2]}", f"{finder[3:]}"],
                     stdout=PIPE,
                 ).communicate()[0]
             else:
                 command_stdout = Popen(
-                    ["iqtree", "-s", input_path, "-bb", f'{bootstrap}'], stdout=PIPE
+                    ["iqtree", "-s", input_path, "-bb", f"{bootstrap}"], stdout=PIPE
                 ).communicate()[0]
 
         return f"{input_path}.treefile"

@@ -46,7 +46,7 @@ To call the program:
 
 In the main folder there is a file_configuration.json where you can modify the parameters set by default. 
 
-######IMPORTANT: there must be an email from a valid account at https://www.ncbi.nlm.nih.gov/gene/
+***IMPORTANT:*** there must be an email from a valid account at https://www.ncbi.nlm.nih.gov/gene/
 We can also parameterize clustal and iqtree.
 In Clustal the number of threads must be greater than 1.
 In IQtree the Bootstrap value must be greater than or equal to 1000, and the finder model can be one of the following: 
@@ -59,7 +59,7 @@ In IQtree the Bootstrap value must be greater than or equal to 1000, and the fin
 + -m MF+MERGE          (Find best partition scheme incl. FreeRate heterogeneity)
 + -m MFP+MERGE         (Like -m MF+MERGE followed by tree inference)  
 
-######IMPORTANT: If a Model Finder is setup, the value of bootstrap is not considered since they are mutually exclusive.  
+***IMPORTANT:*** If a Model Finder is setup, the value of bootstrap is not considered since they are mutually exclusive.  
 
 ### Debugging
 
