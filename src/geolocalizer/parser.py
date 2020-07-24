@@ -32,7 +32,15 @@ class Parser:
 
         for header, raw_seq in raw_fasta_dic.items():
             detected_type = gen_type(raw_seq)
-            parsed_geo_seqs[detected_type].append(self.__build_geo_seq(header, raw_seq))
+            try: 
+                parsed_geo_seqs[detected_type].append(self.__build_geo_seq(header, raw_seq))
+            except:
+                self.__logger.warn(
+                    self.__module,
+                    f'Failed to geolocalize {header}. The seq informaction cannot determine type',
+                )
+                exit(2)
+
 
         biggest_group = max(list(parsed_geo_seqs.values()), key=len)
         biggest_group_size = len(biggest_group)
@@ -40,7 +48,8 @@ class Parser:
         if biggest_group_size < 5:
             err_msg = "You need to include more that 5 sequences of the same type."
             self.__logger.err(self.__module, err_msg)
-            raise TooFewSequencesError(err_msg)
+            #raise TooFewSequencesError(err_msg)
+            exit(2)
         if biggest_group_size < 60:
             self.__logger.warn(
                 self.__module,
@@ -54,35 +63,48 @@ class Parser:
         return {"seqs": biggest_group, "output_path": output_path}
 
     def __build_geo_seq(self, header, raw_seq):
-        geo_seq = {"description": header, "seq": raw_seq}
-        geo_seq["iqtree_label"] = re.search(r"([^\s]+)", header).group(0)
+        if raw_seq != "":
+            geo_seq = {"description": header, "seq": raw_seq}
+            geo_seq["iqtree_label"] = re.search(r"([^\s]+)", header).group(0)
 
-        genbank_regexp = r"(?=gi\|(.*?)\|\w{2,3}\|(.*?).\d?\|)"
+            genbank_regexp = r"(?=gi\|(.*?)\|\w{2,3}\|(.*?).\d?\|)"
 
-        genbank = re.search(genbank_regexp, header)
-        if genbank:
-            geo_seq["genbank_gen_info"] = genbank.group(1)
-            geo_seq["genbank_accession"] = genbank.group(2)
+            genbank = re.search(genbank_regexp, header)
+            if genbank:
+                geo_seq["genbank_gen_info"] = genbank.group(1)
+                geo_seq["genbank_accession"] = genbank.group(2)
+            else:
+                simple_genbank_regexp = r"(?:^)(\w+).\d"
+                simple_genbank = re.search(simple_genbank_regexp, header)
+                if simple_genbank:
+                    geo_seq["genbank_accession"] = simple_genbank.group(1)
+
+            return geo_seq
         else:
-            simple_genbank_regexp = r"(?:^)(\w+).\d"
-            simple_genbank = re.search(simple_genbank_regexp, header)
-            if simple_genbank:
-                geo_seq["genbank_accession"] = simple_genbank.group(1)
-
-        return geo_seq
+            self.__logger.warn(
+                    self.__module,
+                    f'Failed to geolocalize {header}. Header have not seq information.',
+                )
+            exit(2)
 
     def __read_fasta(self, path):
         fasta_dic = {}
 
         with open(path, "r") as file:
             current_label = ""
-
+            fasta_dic[current_label] = ""
             for line in file:
                 if line.startswith(">"):
                     current_label = line[1:].strip()
                     fasta_dic[current_label] = ""
                 else:
                     fasta_dic[current_label] += line.strip()
+        if fasta_dic[""]!="":
+            self.__logger.warn(
+                self.__module,
+                    f'Failed to geolocalize {fasta_dic[""]} header seq information not present',
+                )
+        del fasta_dic[""]  
 
         return fasta_dic
 
