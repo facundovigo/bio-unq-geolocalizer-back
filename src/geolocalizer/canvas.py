@@ -1,6 +1,7 @@
 from pathlib import Path
 from Bio import Phylo
 import folium
+from folium import plugins
 
 
 class Canvas:
@@ -9,6 +10,7 @@ class Canvas:
         self.treefile_path = str(Path(treefile_path).absolute())
         self.__logger = logger
         self.__module = "Canvas"
+        self.__index = 0
 
     def create_map(self):
         fmap = folium.Map(tiles="cartodbpositron", zoom_start=1)
@@ -38,10 +40,19 @@ class Canvas:
             seq = self.parsed_seqs[clade.name]
 
             if "latitude" in seq and "longitude" in seq:
+                self.__index += 1
+
+                number = plugins.BeautifyIcon(
+                    border_color='#00ABDC',
+                    text_color='#00ABDC',
+                    number=self.__index,
+                    inner_icon_style='margin-top:0;')
+
                 folium.Marker(
                     [seq["latitude"], seq["longitude"]],
                     popup=seq["description"],
                     tooltip=seq["genbank_accession"],
+                    icon=number
                 ).add_to(fmap)
             else:
                 self.__logger.log(
@@ -58,20 +69,23 @@ class Canvas:
 
                 if valid_start and valid_end:
                     self.__add_line(start_seq, end_seq, fmap)
-                    self.__add_arrow_head(start_seq, end_seq, fmap)
         else:
+            clade.ladderize()
             left_tree = clade.clades[0]
             right_tree = clade.clades[1]
 
             if left_tree.is_terminal() and right_tree.is_terminal():
                 self.__visit_tree_and_add(terminal_parent, left_tree, fmap)
                 self.__visit_tree_and_add(terminal_parent, right_tree, fmap)
-            elif left_tree.is_terminal():
+            elif left_tree.is_terminal() and not right_tree.is_terminal():
                 self.__visit_tree_and_add(terminal_parent, left_tree, fmap)
                 self.__visit_tree_and_add(left_tree.name, right_tree, fmap)
-            else:
+            elif right_tree.is_terminal() and not left_tree.is_terminal():
                 self.__visit_tree_and_add(terminal_parent, right_tree, fmap)
                 self.__visit_tree_and_add(right_tree.name, left_tree, fmap)
+            else:
+                self.__visit_tree_and_add(terminal_parent, left_tree, fmap)
+                self.__visit_tree_and_add(terminal_parent, right_tree, fmap)
 
     def __add_line(self, start_seq, end_seq, fmap):
         start_coord = (start_seq["latitude"], start_seq["longitude"])
@@ -79,18 +93,6 @@ class Canvas:
 
         folium.PolyLine(
             locations=[start_coord, end_coord], weight=2, color="blue"
-        ).add_to(fmap)
-
-    def __add_arrow_head(self, start_seq, end_seq, fmap):
-        start_coord = (start_seq["latitude"], start_seq["longitude"])
-        end_coord = (end_seq["latitude"], end_seq["longitude"])
-
-        return folium.RegularPolygonMarker(
-            location=end_coord,
-            fill_color="blue",
-            number_of_sides=2,
-            radius=6,
-            rotation=90,
         ).add_to(fmap)
 
     def __arrange_seqs(self, seqs):

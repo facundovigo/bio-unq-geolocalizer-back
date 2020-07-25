@@ -64,3 +64,7 @@ In IQtree the Bootstrap value must be greater than or equal to 1000, and the fin
 ### Debugging
 
 You'll find every file created by the program inside the `tmp` folder. There's also a log file you can use to understand more about the execution.
+
+### Map example
+
+![Map_png](screenshot.png)
