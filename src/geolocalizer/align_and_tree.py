@@ -6,19 +6,13 @@ from pathlib import Path
 
 
 class AlignAndTree:
-    def __init__(self, logger):
+    def __init__(self, folder_name, logger):
         self.__logger = logger
+        self.__folder_name = folder_name
         self.__module = "AlignAndTree"
 
-    def generate_file_extension(self):
-        now = datetime.now()
-        timestamp = datetime.timestamp(now)
-        output = f"{timestamp}_clustalo_aligned"
-        return output
-
     def align_fasta(self, input_path, threads):
-        ext = self.generate_file_extension()
-        output = f"{input_path}{ext}"
+        output = f"{input_path}.aligned"
         command_stdout = Popen(
             ["clustalo", f"{threads}", "-i", input_path, "-o", output], stdout=PIPE
         ).communicate()[0]
@@ -26,7 +20,7 @@ class AlignAndTree:
         return output
 
     def tree_from_align(self, input_path, bootstrap, finder):
-        with self.__cd("tmp/"):
+        with self.__cd(self.__folder_name):
 
             if finder[0:2] == "-m":
                 command_stdout = Popen(

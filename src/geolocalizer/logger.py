@@ -3,9 +3,9 @@ import logging
 
 
 class Logger:
-    def __init__(self, output_file):
+    def __init__(self, folder_name):
         self.__logger = logging.getLogger("Geolocalizer")
-        self.__output = str(Path(output_file).absolute())
+        self.__output = str(Path(f"{folder_name}/logfile.txt").absolute())
         self.__configure_logger(self.__logger, self.__output)
 
     def log(self, module, msg):

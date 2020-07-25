@@ -16,8 +16,9 @@ class TooFewSequencesError(Exception):
 
 
 class Parser:
-    def __init__(self, logger):
+    def __init__(self, output_folder, logger):
         self.__logger = logger
+        self.__output_folder = output_folder
         self.__module = "Parser"
 
     def parse(self, sequence_path, write_output=False):
@@ -32,15 +33,16 @@ class Parser:
 
         for header, raw_seq in raw_fasta_dic.items():
             detected_type = gen_type(raw_seq)
-            try: 
-                parsed_geo_seqs[detected_type].append(self.__build_geo_seq(header, raw_seq))
+            try:
+                parsed_geo_seqs[detected_type].append(
+                    self.__build_geo_seq(header, raw_seq)
+                )
             except:
                 self.__logger.warn(
                     self.__module,
-                    f'Failed to geolocalize {header}. The seq informaction cannot determine type',
+                    f"Failed to geolocalize {header}. The seq informaction cannot determine type",
                 )
                 exit(2)
-
 
         biggest_group = max(list(parsed_geo_seqs.values()), key=len)
         biggest_group_size = len(biggest_group)
@@ -81,9 +83,9 @@ class Parser:
             return geo_seq
         else:
             self.__logger.warn(
-                    self.__module,
-                    f'Failed to geolocalize {header}. Header have not seq information.',
-                )
+                self.__module,
+                f"Failed to geolocalize {header}. Header have not seq information.",
+            )
             exit(2)
 
     def __read_fasta(self, path):
@@ -98,12 +100,12 @@ class Parser:
                     fasta_dic[current_label] = ""
                 else:
                     fasta_dic[current_label] += line.strip()
-        if fasta_dic[""]!="":
+        if fasta_dic[""] != "":
             self.__logger.warn(
                 self.__module,
-                    f'Failed to geolocalize {fasta_dic[""]} header seq information not present',
-                )
-        del fasta_dic[""]  
+                f'Failed to geolocalize {fasta_dic[""]} header seq information not present',
+            )
+        del fasta_dic[""]
 
         return fasta_dic
 
@@ -112,11 +114,7 @@ class Parser:
         return tail or ntpath.basename(head)
 
     def __write_validated_fasta(self, input_name, seqs):
-        full_path = str(Path("tmp").absolute())
-        Path(full_path).mkdir(parents=True, exist_ok=True)
-        output_name = (
-            f"tmp/{datetime.timestamp(datetime.now())}_{self.__path_leaf(input_name)}"
-        )
+        output_name = f"{self.__output_folder}/{datetime.timestamp(datetime.now())}_{self.__path_leaf(input_name)}"
         output_name = str(Path(output_name).absolute())
 
         with open(output_name, "w") as validated_file:

@@ -36,11 +36,11 @@ To update dependencies, run:
 
 ### Basic usage
 
-You'll need an NCBI account to communicate with the Entrez database. Please edit the `main.py` file and add your address to the email variable.
+You'll need an NCBI account to communicate with the Entrez database. Please edit your `config.json` file and add your address to the email variable.
 
 To call the program:
 
-`python main.py geolocalized_seqs.fasta`
+`python main.py --fasta src/files/examples_2.fasta`
 
 ### Config your environment
 
